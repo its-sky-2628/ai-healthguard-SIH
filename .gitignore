@@ -11,3 +11,4 @@ __pycache__/
 venv/
 .venv/
 data/raw/Final_Augmented_dataset_Diseases_and_Symptoms copy.csv
+.env

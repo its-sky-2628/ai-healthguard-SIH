@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -17,6 +17,22 @@ export default function App() {
   const [activePage, setActivePage] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [backendStatus, setBackendStatus] = useState("checking");
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Backend connected:", data);
+        setBackendStatus(data.success ? "connected" : "error");
+      })
+      .catch((error) => {
+        console.error("Backend connection failed:", error);
+        setBackendStatus("error");
+      });
+  }, []);
+
+
 
   const openAnalysis = () => setModalOpen(true);
 
