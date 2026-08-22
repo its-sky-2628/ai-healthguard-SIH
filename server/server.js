@@ -35,6 +35,13 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/api/health", (req, res) => {
+  res.json({
+    success: true,
+    message: "AI HealthGuard API is running",
+  });
+});
+
 // LOGIN
 app.post("/api/auth/login", async (req, res) => {
   try {

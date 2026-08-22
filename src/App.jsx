@@ -20,7 +20,7 @@ export default function App() {
   const [backendStatus, setBackendStatus] = useState("checking");
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/`)
+    fetch(`${import.meta.env.VITE_API_URL || ""}/`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Backend connected:", data);
