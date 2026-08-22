@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from pathlib import Path
 import joblib
 import pandas as pd
 
@@ -8,7 +9,7 @@ import pandas as pd
 # LOAD MODEL
 # ============================================
 
-MODEL_PATH = "models/fever_model.pkl"
+MODEL_PATH = Path(__file__).resolve().parent / "models" / "fever_model.pkl"
 
 package = joblib.load(MODEL_PATH)
 
