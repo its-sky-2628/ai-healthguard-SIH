@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "build:render": "npm install && npm install --prefix server && pip3 install -r ml/requirements.txt && npm run build",
+    "build:render": "npm install && npm install --prefix server && pip3 install --break-system-packages -r ml/requirements.txt && npm run build",
     "start:render": "sh -c 'cd ml && python3 -m uvicorn api:app --host 127.0.0.1 --port 8000 & cd .. && node server/server.js'"
   },
   "dependencies": {
