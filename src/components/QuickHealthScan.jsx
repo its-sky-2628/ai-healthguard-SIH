@@ -154,7 +154,7 @@ export default function QuickHealthScan() {
             </div>
             <div className="mt-3 flex items-center justify-center gap-4 text-[12.5px]">
               <span className="rounded-full bg-success/10 px-2.5 py-1 font-semibold text-success">
-                Risk Level: Low
+                Risk Level: High
               </span>
               <span className="text-muted">Confidence: 94.7%</span>
             </div>
