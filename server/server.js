@@ -114,7 +114,7 @@ app.post("/api/auth/login", async (req, res) => {
 // FEVER ML PREDICTION
 app.post("/api/predict-fever", async (req, res) => {
   try {
-    const mlApiUrl = process.env.ML_API_URL;
+    const mlApiUrl = process.env.ML_API_URL || "http://127.0.0.1:8000";
 
     if (!mlApiUrl) {
       return res.status(500).json({
