@@ -134,11 +134,29 @@ app.post("/api/predict-fever", async (req, res) => {
       }
     );
 
-    const data = await response.json();
+    const contentType = response.headers.get("content-type") || "";
+    const raw = await response.text();
 
     if (!response.ok) {
-      return res.status(response.status).json(data);
+      console.error("ML API HTTP error:", response.status, raw.slice(0, 500));
+
+      return res.status(response.status).json({
+        success: false,
+        message: "ML API returned an error",
+        status: response.status,
+      });
     }
+
+    if (!contentType.includes("application/json")) {
+      console.error("ML API returned non-JSON:", raw.slice(0, 500));
+
+      return res.status(502).json({
+        success: false,
+        message: "ML API returned non-JSON response",
+      });
+    }
+
+    const data = JSON.parse(raw);
 
     res.status(200).json(data);
 
