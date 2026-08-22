@@ -8,8 +8,8 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "build:render": "npm install && npm install --prefix server && pip3 install --break-system-packages -r ml/requirements.txt && npm run build",
-    "start:render": "sh -c 'cd ml && python3 -m uvicorn api:app --host 127.0.0.1 --port 8000 & cd .. && node server/server.js'"
+    "build:render": "npm install && npm install --prefix server && python3 -m venv ml/venv && ml/venv/bin/pip install --upgrade pip && ml/venv/bin/pip install -r ml/requirements.txt && npm run build",
+    "start:render": "sh -c 'ml/venv/bin/python -m uvicorn ml.api:app --host 127.0.0.1 --port 8000 & exec node server/server.js'"
   },
   "dependencies": {
     "framer-motion": "^13.1.0",

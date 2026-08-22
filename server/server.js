@@ -9,7 +9,7 @@ const axios = require("axios");
 const User = require("./models/User");
 const connectDB = require("./config/db");
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 
@@ -27,13 +27,6 @@ app.use(
 app.use(express.json());
 
 connectDB();
-
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "AI HealthGuard API is running",
-  });
-});
 
 app.get("/api/health", (req, res) => {
   res.json({
