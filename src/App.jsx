@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import AnalysisModal from "./components/AnalysisModal";
+
 import Dashboard from "./pages/Dashboard";
 import HealthScan from "./pages/HealthScan";
 import PredictAnalyze from "./pages/PredictAnalyze";
@@ -12,15 +14,19 @@ import AIInsights from "./pages/AIInsights";
 import Doctors from "./pages/Doctors";
 import Appointments from "./pages/Appointments";
 import Settings from "./pages/Settings";
+import Auth from "./pages/Auth";
+
+import { getCurrentUser } from "./api";
 
 export default function App() {
   const [activePage, setActivePage] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [backendStatus, setBackendStatus] = useState("checking");
+  const [user, setUser] = useState(getCurrentUser());
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || ""}/`)
+    fetch(`${import.meta.env.VITE_API_URL || ""}/api/health`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Backend connected:", data);
@@ -32,49 +38,102 @@ export default function App() {
       });
   }, []);
 
+  const openAnalysis = () => {
+    setModalOpen(true);
+  };
 
+  const handleAuthSuccess = (loggedInUser) => {
+    setUser(loggedInUser);
+    setActivePage("dashboard");
+  };
 
-  const openAnalysis = () => setModalOpen(true);
+  const openProfile = () => {
+    setActivePage("auth");
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setActivePage("auth");
+  };
 
   const renderPage = () => {
     switch (activePage) {
+      case "auth":
+        return (
+          <Auth
+            onSuccess={handleAuthSuccess}
+            onBack={() => setActivePage("dashboard")}
+          />
+        );
+
       case "dashboard":
-        return <Dashboard onStartAnalysis={openAnalysis} />;
+        return (
+          <Dashboard
+            onStartAnalysis={openAnalysis}
+            user={user}
+          />
+        );
+
       case "health-scan":
         return <HealthScan />;
+
       case "predict-analyze":
         return <PredictAnalyze onStartAnalysis={openAnalysis} />;
+
       case "medical-history":
         return <MedicalHistory />;
+
       case "reports":
         return <Reports />;
+
       case "ai-insights":
         return <AIInsights />;
+
       case "doctors":
         return <Doctors />;
+
       case "appointments":
         return <Appointments />;
+
       case "settings":
         return <Settings />;
+
       default:
-        return <Dashboard onStartAnalysis={openAnalysis} />;
+        return (
+          <Dashboard
+            onStartAnalysis={openAnalysis}
+            user={user}
+          />
+        );
     }
   };
 
+  const isAuthPage = activePage === "auth";
+
   return (
     <div className="flex min-h-screen bg-bg font-sans text-navy">
-      <Sidebar
-        activePage={activePage}
-        onNavigate={setActivePage}
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+
+      {!isAuthPage && (
+        <Sidebar
+          activePage={activePage}
+          onNavigate={setActivePage}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
+      )}
 
       <div className="flex min-h-screen w-full flex-1 flex-col">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+
+        <Header
+          onMenuClick={() => setSidebarOpen(true)}
+          user={user}
+          onProfileClick={openProfile}
+          onLogout={handleLogout}
+        />
 
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1400px]">
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={activePage}
@@ -86,11 +145,17 @@ export default function App() {
                 {renderPage()}
               </motion.div>
             </AnimatePresence>
+
           </div>
         </main>
       </div>
 
-      <AnalysisModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      {!isAuthPage && (
+        <AnalysisModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
