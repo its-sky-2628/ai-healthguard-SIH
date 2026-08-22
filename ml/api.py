@@ -8,7 +8,7 @@ import pandas as pd
 # LOAD MODEL
 # ============================================
 
-MODEL_PATH = "ml/models/fever_model.pkl"
+MODEL_PATH = "models/fever_model.pkl"
 
 package = joblib.load(MODEL_PATH)
 
