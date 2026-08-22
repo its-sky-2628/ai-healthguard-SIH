@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
@@ -106,19 +107,38 @@ app.post("/api/auth/login", async (req, res) => {
 // FEVER ML PREDICTION
 app.post("/api/predict-fever", async (req, res) => {
   try {
-    const response = await axios.post(
-      "http://localhost:8000/predict-fever",
-      req.body,
+    const mlApiUrl = process.env.ML_API_URL;
+
+    if (!mlApiUrl) {
+      return res.status(500).json({
+        success: false,
+        message: "ML_API_URL is not configured",
+      });
+    }
+
+    const response = await fetch(
+      `${mlApiUrl}/predict-fever`,
       {
-        timeout: 15000,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req.body),
       }
     );
 
-    res.status(200).json(response.data);
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
+
+    res.status(200).json(data);
+
   } catch (error) {
     console.error(
       "Fever ML prediction error:",
-      error.response?.data || error.message
+      error.message
     );
 
     res.status(500).json({
@@ -127,6 +147,21 @@ app.post("/api/predict-fever", async (req, res) => {
     });
   }
 });
+
+
+// SERVE REACT FRONTEND
+const frontendPath = path.join(__dirname, "..", "dist");
+
+app.use(express.static(frontendPath));
+
+app.get("/{*splat}", (req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    return next();
+  }
+
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
 
 const PORT = process.env.PORT || 5001;
 
